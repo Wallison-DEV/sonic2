@@ -1,36 +1,29 @@
-const gulp = require ('gulp');
+const gulp  = require('gulp');
 const sass = require('gulp-sass')(require('sass'));
-const sourcemaps = require('gulp-sourcemaps');
+const imagemin = require('gulp-imagemin');
 const uglify = require('gulp-uglify');
-const imagemin= require('gulp-imagemin');
 
-function compilaSass(){
-    return gulp.src('./src/styles/main.scss')
-        .pipe(sourcemaps.init())
-        .pipe(sass(
-            {
-                outputStyle: 'compressed'
-            }
-        ))
-        .pipe(sourcemaps.write('./maps'))
-        .pipe(gulp.dest('./dist/styles'))
-}
-
-function minificaJS(){
-    return gulp.src('src/scripts/*.js')
+function scripts(){
+    return gulp.src('./src/scripts/*.js')
         .pipe(uglify())
-        .pipe(gulp.dest('./dist/scripts'))
+        .pipe(gulp.dest('./public/js'))
 }
 
-function minificaImagem(){
+function styles(){
+    return gulp.src('./src/styles/*.scss')
+        .pipe(sass({outputStyle: 'compressed'}))
+        .pipe(gulp.dest('./public/css'))
+
+}
+function images(){
     return gulp.src('./src/images/**/*')
         .pipe(imagemin())
-        .pipe(gulp.dest('./dist/images'))
+        .pipe(gulp.dest('./public/images'))
+
 }
 
-exports.default = gulp.parallel(compilaSass, minificaJS, minificaImagem);
-exports.imagens = minificaImagem;
-
+exports.default = gulp.parallel(styles, images);
 exports.watch = function(){
-    gulp.watch('./src',{ignoreInitial: false}, gulp.parallel(compilaSass, minificaJS))
+    gulp.watch('./src/styles/*.scss', {ignoreInitial: false} , gulp.series(styles))
+    gulp.watch('./src/scripts/*.js', {ignoreInitial: false} , gulp.series(scripts))
 }

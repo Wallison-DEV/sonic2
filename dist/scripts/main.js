@@ -1,1 +1,0 @@
-function somar(n,r){return n+r}
